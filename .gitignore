@@ -21,3 +21,6 @@ data/*.csv
 
 # OS
 .DS_Store
+
+# logs de execucao
+reports/train_log.txt

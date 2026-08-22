@@ -125,15 +125,22 @@ subamostragem de linhas e colunas) — regularização contra overfitting.
 
 Avaliação temporal (treinou em 2023, previu 2024 — dados nunca vistos):
 
-| Métrica (teste 2024) | Simples | Ponderada pelo peso amostral |
+| Métrica (teste 2024, corte 0,5) | Simples | Ponderada pelo peso amostral |
 |---|---|---|
-| ROC-AUC | **0,640** | 0,639 |
-| Acurácia | 0,632 | 0,630 |
-| F1 (alfabetizado) | 0,703 | 0,701 |
-| Precision / Recall (alfabetizado) | 0,66 / 0,75 | 0,66 / 0,75 |
-| Brier score | 0,225 | 0,226 |
+| ROC-AUC | **0,640** | 0,637 |
+| Acurácia | 0,631 | 0,626 |
+| Acurácia balanceada | 0,571 | 0,569 |
+| F1 (alfabetizado) | 0,740 | 0,735 |
+| Precision / Recall (alfabetizado) | 0,64 / 0,88 | 0,63 / 0,88 |
+| Brier score | 0,226 | 0,228 |
 
-Gap treino (0,688) × teste (0,640) = **0,048**: overfitting contido.
+Gap treino (AUC 0,688) × teste (0,640) = **0,048**: overfitting contido.
+
+No corte padrão de 0,5 o modelo favorece o recall da classe majoritária
+(alfabetizado): recall 0,88 com precision 0,64 e acurácia balanceada 0,571.
+Para o uso real — triagem de crianças em risco — o corte deve ser escolhido
+pela tabela de sensibilidade do notebook 02, que troca recall da classe
+"não alfabetizado" por volume de sinalizações.
 
 ![Avaliação](images/mod_avaliacao.png)
 
