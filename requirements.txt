@@ -12,3 +12,5 @@ basedosdados>=2.0
 python-dotenv>=1.0
 google-cloud-bigquery-storage>=2.25
 db-dtypes>=1.2
+geobr>=0.2
+geopandas>=1.0

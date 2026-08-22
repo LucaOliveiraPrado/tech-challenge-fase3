@@ -1,12 +1,41 @@
 # Tech Challenge — Fase 3
 ## Predição e Inteligência Analítica para Alfabetização no Brasil
 
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-Pipeline-F7931E?logo=scikitlearn&logoColor=white)
+![LightGBM](https://img.shields.io/badge/LightGBM-modelo%20final-2a9d8f)
+![SHAP](https://img.shields.io/badge/SHAP-interpretabilidade-264653)
+![BigQuery](https://img.shields.io/badge/BigQuery-camada%20Gold-4285F4?logo=googlecloud&logoColor=white)
+
 Modelo supervisionado que prevê se um aluno do 2º ano do fundamental será
 considerado **alfabetizado ou não**, construído sobre a camada Gold da Fase 2 e
 enriquecido com variáveis educacionais, territoriais e socioeconômicas — e a
 transformação dessas previsões em inteligência acionável para gestores públicos.
 
-![Risco municipal previsto](images/estrategia_risco_municipal.png)
+![Mapa do risco educacional previsto](images/estrategia_mapa_risco.png)
+
+*Risco de não alfabetização previsto pelo modelo para cada município (coorte
+2024, previsão fora-da-amostra; cinza = sem dados divulgados).*
+
+---
+
+## Arquitetura da solução
+
+```mermaid
+flowchart LR
+    subgraph fase2 ["Fase 2 (BigQuery)"]
+        B[Bronze<br/>microdados INEP] --> S[Silver<br/>dbt + testes] --> G[Gold]
+    end
+    subgraph ext ["Fontes externas (Base dos Dados)"]
+        CE[Censo Escolar] & IB[IBGE pop/PIB] & AD[Atlas ADH 2010] & ID[IDEB]
+    end
+    G --> BD[gold_base_ml_alunos<br/>3,35 mi alunos]
+    ext --> BD
+    BD --> P["Pipeline sklearn<br/>imputação + OHE + LightGBM"]
+    P -->|treina 2023| V["Validação temporal<br/>testa 2024"]
+    V --> I["SHAP +<br/>permutation importance"]
+    V --> A["Aplicação estratégica<br/>ranking · clusters · metas"]
+```
 
 ---
 
@@ -140,7 +169,8 @@ No corte padrão de 0,5 o modelo favorece o recall da classe majoritária
 (alfabetizado): recall 0,88 com precision 0,64 e acurácia balanceada 0,571.
 Para o uso real — triagem de crianças em risco — o corte deve ser escolhido
 pela tabela de sensibilidade do notebook 02, que troca recall da classe
-"não alfabetizado" por volume de sinalizações.
+"não alfabetizado" por volume de sinalizações. O notebook traz ainda a **curva
+de calibração** das probabilidades (decis previstos × frequência observada).
 
 ![Avaliação](images/mod_avaliacao.png)
 
@@ -182,7 +212,17 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
   [`reports/municipios_risco_meta_2025.csv`](reports/municipios_risco_meta_2025.csv);
 - **Política estadual importa mais que renda:** o peso da UF sobre todos os
   demais fatores sugere que arranjos estaduais estruturados de alfabetização
-  são a alavanca mais poderosa observável nos dados.
+  são a alavanca mais poderosa observável nos dados;
+- **O modelo melhora à medida que o programa acumula histórico:** o experimento
+  do notebook 05 mostra que incorporar a taxa municipal da edição anterior
+  (possível a partir da coorte de 2024) eleva a AUC de 0,653 para 0,662 no
+  mesmo protocolo, com ganho positivo nos 3 folds — o modelo principal é o
+  piso, não o teto.
+
+| | |
+|---|---|
+| ![Taxa por UF](images/eda_uf.png) | ![Clusters](images/estrategia_clusters.png) |
+| ![Fatores](images/interp_permutation.png) | ![Metas em risco](images/estrategia_metas_uf.png) |
 
 ## 9. Limitações do projeto
 
@@ -217,7 +257,9 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
 
 ## 11. Possíveis evoluções futuras
 
-- Re-treinar a cada edição (2025+) e medir a estabilidade do ranking;
+- Re-treinar a cada edição (2025+) incorporando a taxa municipal da edição
+  anterior — o ganho já está quantificado no notebook 05 — e medir a
+  estabilidade do ranking;
 - Nível socioeconômico do INEP (INSE) por escola, se o INEP publicar chave
   cruzável;
 - Modelo hierárquico (aluno dentro de escola dentro de município) para separar
@@ -235,22 +277,33 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
 tech-challenge-fase3/
 ├── data/                    # parquets locais (gitignorados; gerados pelo build)
 ├── notebooks/
-│   ├── 01_eda.ipynb                  # análise exploratória e hipóteses
-│   ├── 02_modelagem.ipynb            # pipeline, comparação, tuning, avaliação
-│   ├── 03_interpretabilidade.ipynb   # permutation importance + SHAP
-│   └── 04_aplicacao_estrategica.ipynb# 5 perguntas de negócio
+│   ├── 01_eda.ipynb                   # análise exploratória e hipóteses
+│   ├── 02_modelagem.ipynb             # pipeline, comparação, tuning, avaliação
+│   ├── 03_interpretabilidade.ipynb    # permutation importance + SHAP
+│   ├── 04_aplicacao_estrategica.ipynb # 5 perguntas de negócio + mapa
+│   └── 05_experimento_historico.ipynb # ganho do histórico do indicador
 ├── src/
 │   ├── preprocessing/
 │   │   ├── build_dataset.py  # materializa a base na Gold e exporta parquet
 │   │   └── pipeline.py       # pré-processamento integrado (ColumnTransformer)
 │   ├── modeling/train.py     # comparação, tuning, treino final, predições
-│   ├── evaluation/           # (avaliação nos notebooks 02-03)
-│   └── visualization/        # (gráficos nos notebooks)
-├── reports/                  # documentação técnica, métricas e CSVs acionáveis
-├── images/                   # gráficos exportados dos notebooks
+│   ├── evaluation/metrics.py # painel único de métricas (treino e notebooks)
+│   └── visualization/        # identidade visual + mapa coroplético (geobr)
+├── reports/
+│   ├── base_analitica.md            # dicionário e decisões da base
+│   ├── decisoes_analiticas.md       # registro de decisões (D1-D15)
+│   ├── metricas_modelagem.json      # métricas completas do treino
+│   ├── ranking_risco_municipal.csv  # risco previsto por município
+│   ├── clusters_municipais.csv      # família de cada município
+│   ├── municipios_risco_meta_2025.csv
+│   └── roteiro_video_executivo.md
+├── images/                  # gráficos exportados dos notebooks
 ├── requirements.txt
 └── README.md
 ```
+
+Registro completo de decisões (grão, leakage, validação, algoritmo, thresholds):
+[`reports/decisoes_analiticas.md`](reports/decisoes_analiticas.md).
 
 ## Como executar
 

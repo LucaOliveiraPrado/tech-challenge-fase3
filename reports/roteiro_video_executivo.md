@@ -82,7 +82,8 @@ Três: **desenho de política**. Os dados agrupam os municípios em três famíl
 com perfis muito diferentes; a família crítica, concentrada no Norte e
 Nordeste, pede ação socioeducacional combinada, não apenas educacional."
 
-*(Visual: `estrategia_clusters.png` e `estrategia_risco_municipal.png`.)*
+*(Visual: `estrategia_mapa_risco.png` — o mapa do Brasil pintado pelo risco —
+e `estrategia_clusters.png`.)*
 
 ## Bloco 5 — Fecho (4:15–4:50)
 
@@ -90,8 +91,10 @@ Nordeste, pede ação socioeducacional combinada, não apenas educacional."
 
 "Em resumo: com dado público e método aberto, é possível transformar a
 avaliação de alfabetização de um retrato tardio em um instrumento de gestão
-antecipada. O código, as listas por município e toda a documentação estão no
-repositório do projeto, prontos para uso e auditoria.
+antecipada. E esse instrumento melhora sozinho: testamos e, a cada nova edição
+da avaliação, incorporar o histórico do próprio indicador aumenta a precisão.
+O código, as listas por município e toda a documentação estão no repositório
+do projeto, prontos para uso e auditoria.
 
 A meta de 2030 é de todos. Saber onde ela está em risco, hoje, é o primeiro
 passo para cumpri-la. Obrigado."
