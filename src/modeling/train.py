@@ -7,7 +7,7 @@ Protocolo (justificado na EDA e no README):
      de generalização.
   2. Comparação de candidatos por validação cruzada AGRUPADA por município
      (StratifiedGroupKFold) dentro de 2023: alunos do mesmo município nunca
-     ficam em treino e validação ao mesmo tempo — sem isso o modelo "decora"
+     ficam em treino e validação ao mesmo tempo; sem isso o modelo "decora"
      o território e a métrica infla.
   3. A comparação e a busca de hiperparâmetros rodam numa SUBAMOSTRA agrupada
      (limite de memória da máquina, 8 GB); o campeão é re-treinado na base
@@ -154,7 +154,7 @@ def main() -> None:
     joblib.dump(final, DATA / "modelo_final.joblib")
     with open(REPORTS / "metricas_modelagem.json", "w") as f:
         json.dump(resultado, f, indent=2, ensure_ascii=False)
-    print(f"OK em {time.time()-t0:.0f}s — modelo em data/modelo_final.joblib, "
+    print(f"OK em {time.time()-t0:.0f}s; modelo em data/modelo_final.joblib, "
           f"métricas em reports/metricas_modelagem.json")
 
 

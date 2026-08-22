@@ -1,10 +1,10 @@
 """
-Pipeline de pré-processamento — integrado ao modelo (requisito do enunciado).
+Pipeline de pré-processamento integrado ao modelo (requisito do enunciado).
 
 Todas as transformações (imputação, escala, encoding) vivem dentro de um
 ColumnTransformer que entra num Pipeline do sklearn junto com o estimador.
 Consequência: o `fit` das transformações acontece SEMPRE e SOMENTE no conjunto
-de treino de cada split — o sklearn garante isso por construção, eliminando o
+de treino de cada split; o sklearn garante isso por construção, eliminando o
 vazamento clássico de "ajustar o scaler/imputer na base inteira".
 """
 from __future__ import annotations
@@ -20,7 +20,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 # ---------------------------------------------------------------------------
 TARGET = "alfabetizado"
 WEIGHT = "peso_aluno"
-# Chaves de grupo/split — nunca entram como feature (alta cardinalidade = decorar território)
+# Chaves de grupo/split: nunca entram como feature (alta cardinalidade = decorar território)
 KEYS = ["ano", "id_municipio", "id_escola"]
 
 CAT_FEATURES = ["rede", "regiao", "sigla_uf"]
