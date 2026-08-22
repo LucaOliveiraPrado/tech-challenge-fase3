@@ -222,6 +222,31 @@ GOLD_EXPORTS = [
     "gold_taxa_municipio_microdados",
 ]
 
+# Exports auxiliares por query (aplicação estratégica).
+QUERY_EXPORTS = {
+    # Nome oficial dos municípios (diretório da Base dos Dados) — para os
+    # rankings de risco falarem "Município (UF)", não código IBGE.
+    "dim_municipios": """
+        select id_municipio, nome, sigla_uf
+        from `basedosdados.br_bd_diretorios_brasil.municipio`
+    """,
+    # Metas municipais POR ANO (2024–2030). A Silver da Fase 2 manteve apenas a
+    # meta de 2030; para comparar previsão × meta do ano seguinte precisamos da
+    # trajetória anual completa, direto da Bronze.
+    "metas_municipio_por_ano": f"""
+        select
+            id_municipio,
+            rede,
+            taxa_alfabetizacao      as taxa_base,
+            meta_alfabetizacao_2024, meta_alfabetizacao_2025,
+            meta_alfabetizacao_2026, meta_alfabetizacao_2027,
+            meta_alfabetizacao_2028, meta_alfabetizacao_2029,
+            meta_alfabetizacao_2030
+        from `{PROJECT_ID}.bronze.meta_alfabetizacao_municipio`
+        where ano = (select max(ano) from `{PROJECT_ID}.bronze.meta_alfabetizacao_municipio`)
+    """,
+}
+
 
 def estimate_mb(client: bigquery.Client, sql: str, label: str) -> float:
     """Dry-run: estima os bytes processados antes de executar (FinOps)."""
@@ -241,13 +266,14 @@ def main() -> None:
     n = client.get_table(f"{PROJECT_ID}.gold.gold_base_ml_alunos").num_rows
     log.info("gold.gold_base_ml_alunos materializada: %d linhas", n)
 
-    for table in GOLD_EXPORTS:
-        sql = f"select * from `{PROJECT_ID}.gold.{table}`"
-        estimate_mb(client, sql, f"export {table}")
+    exports = {t: f"select * from `{PROJECT_ID}.gold.{t}`" for t in GOLD_EXPORTS}
+    exports.update(QUERY_EXPORTS)
+    for nome, sql in exports.items():
+        estimate_mb(client, sql, f"export {nome}")
         df = client.query(sql).to_dataframe()
-        out = DATA_DIR / f"{table}.parquet"
+        out = DATA_DIR / f"{nome}.parquet"
         df.to_parquet(out, index=False)
-        log.info("exportado %s: %d linhas -> %s", table, len(df), out)
+        log.info("exportado %s: %d linhas -> %s", nome, len(df), out)
 
     log.info("Base analítica pronta em %s/", DATA_DIR)
 
