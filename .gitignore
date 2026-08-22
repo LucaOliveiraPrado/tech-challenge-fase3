@@ -1,0 +1,23 @@
+# Python / ambiente
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+# Credenciais — NUNCA versionar
+.env
+*service-account*.json
+*-key.json
+credentials/
+
+# Dados locais (não versionar dados brutos)
+data/*.parquet
+data/*.csv
+
+# Modelos treinados grandes
+*.joblib
+*.pkl
+
+# OS
+.DS_Store

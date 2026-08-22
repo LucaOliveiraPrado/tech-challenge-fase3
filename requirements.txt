@@ -1,0 +1,12 @@
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+matplotlib>=3.9
+seaborn>=0.13
+shap>=0.46
+lightgbm>=4.5
+jupyter>=1.0
+pyarrow>=17.0
+google-cloud-bigquery>=3.25
+basedosdados>=2.0
+python-dotenv>=1.0
