@@ -1,4 +1,4 @@
-# Tech Challenge — Fase 3
+# Tech Challenge Fase 3
 ## Predição e Inteligência Analítica para Alfabetização no Brasil
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -9,7 +9,7 @@
 
 Modelo supervisionado que prevê se um aluno do 2º ano do fundamental será
 considerado **alfabetizado ou não**, construído sobre a camada Gold da Fase 2 e
-enriquecido com variáveis educacionais, territoriais e socioeconômicas — e a
+enriquecido com variáveis educacionais, territoriais e socioeconômicas, e a
 transformação dessas previsões em inteligência acionável para gestores públicos.
 
 ![Mapa do risco educacional previsto](images/estrategia_mapa_risco.png)
@@ -75,12 +75,12 @@ A base de modelagem nasce **na camada Gold** do BigQuery da Fase 2
 - **Origem principal:** microdados da Avaliação da Alfabetização (INEP), via
   pipeline Bronze → Silver → Gold da Fase 2 (dbt, 47 testes de qualidade);
 - **Enriquecimento externo** (Base dos Dados / BigQuery):
-  - *Censo Escolar (INEP)* — infraestrutura escolar agregada por município
+  - *Censo Escolar (INEP)*: infraestrutura escolar agregada por município
     (13 indicadores: internet, biblioteca, saneamento, urbanização, porte);
-  - *IBGE* — população municipal e PIB per capita do ano anterior;
-  - *Atlas do Desenvolvimento Humano (2010)* — IDHM e subíndices, Gini, renda,
+  - *IBGE*: população municipal e PIB per capita do ano anterior;
+  - *Atlas do Desenvolvimento Humano (2010)*: IDHM e subíndices, Gini, renda,
     pobreza infantil, analfabetismo adulto (12 indicadores);
-  - *IDEB (INEP)* — anos iniciais da rede pública, **edição anterior** ao ano
+  - *IDEB (INEP)*: anos iniciais da rede pública, **edição anterior** ao ano
     avaliado (2021 → alunos de 2023; 2023 → alunos de 2024).
 
 Dicionário completo, cobertura dos joins e decisões de construção:
@@ -90,7 +90,7 @@ Dicionário completo, cobertura dos joins e decisões de construção:
 pública (a rede privada aparece com 24 alunos residuais); **Roraima não possui
 dados divulgados** em nenhum dos dois anos; 1.185 alunos chegam sem peso
 amostral; o `id_escola` é **anonimizado** pelo INEP (join com o Censo Escolar
-por escola é impossível — testado, zero casamento — por isso o enriquecimento
+por escola é impossível (testado: zero casamento), e por isso o enriquecimento
 escolar é municipal).
 
 ## 4. Etapas de modelagem
@@ -112,7 +112,7 @@ Scikit-learn com o pré-processamento **integrado ao modelo**:
 
 **Tratamento de data leakage** (decisões explícitas, verificadas na base):
 
-1. `proficiencia` **nunca** entra como feature — o alvo é literalmente
+1. `proficiencia` **nunca** entra como feature: o alvo é literalmente
    `proficiencia >= 743`;
 2. Alunos **ausentes** ficam fora do treino: chegam com `alfabetizado = 0`
    preenchido de fábrica, mas isso é artefato, não medição;
@@ -126,7 +126,7 @@ Scikit-learn com o pré-processamento **integrado ao modelo**:
 
 **Protocolo de validação:**
 
-- **Avaliação principal — split temporal:** treina em 2023, testa em 2024
+- **Avaliação principal, o split temporal:** treina em 2023, testa em 2024
   (o cenário real de uso);
 - Comparação de candidatos e busca de hiperparâmetros
   (`RandomizedSearchCV`, 12 × 3 folds agrupados) em subamostra agrupada de
@@ -148,11 +148,11 @@ Os três modelos reais empatam tecnicamente antes do tuning. O **LightGBM
 otimizado** assume a frente e foi escolhido também pelo critério operacional:
 treina em minutos na base completa (1,5 mi de linhas) com memória modesta. Os
 hiperparâmetros vencedores são conservadores (`num_leaves=31`, `reg_lambda=5`,
-subamostragem de linhas e colunas) — regularização contra overfitting.
+subamostragem de linhas e colunas), regularização contra overfitting.
 
 ## 6. Métricas de avaliação
 
-Avaliação temporal (treinou em 2023, previu 2024 — dados nunca vistos):
+Avaliação temporal (treinou em 2023, previu 2024, dados nunca vistos):
 
 | Métrica (teste 2024, corte 0,5) | Simples | Ponderada pelo peso amostral |
 |---|---|---|
@@ -167,7 +167,7 @@ Gap treino (AUC 0,688) × teste (0,640) = **0,048**: overfitting contido.
 
 No corte padrão de 0,5 o modelo favorece o recall da classe majoritária
 (alfabetizado): recall 0,88 com precision 0,64 e acurácia balanceada 0,571.
-Para o uso real — triagem de crianças em risco — o corte deve ser escolhido
+Para o uso real (triagem de crianças em risco), o corte deve ser escolhido
 pela tabela de sensibilidade do notebook 02, que troca recall da classe
 "não alfabetizado" por volume de sinalizações. O notebook traz ainda a **curva
 de calibração** das probabilidades (decis previstos × frequência observada).
@@ -176,7 +176,7 @@ de calibração** das probabilidades (decis previstos × frequência observada).
 
 O notebook 02 traz também a **tabela de cortes de decisão**: tratando o modelo
 como triagem, baixar o corte aumenta o recall da classe "não alfabetizado"
-(capturar mais crianças em risco) ao custo de mais sinalizações — o trade-off é
+(capturar mais crianças em risco) ao custo de mais sinalizações; o trade-off é
 uma escolha do gestor, não do algoritmo.
 
 ## 7. Interpretação dos resultados
@@ -184,15 +184,15 @@ uma escolha do gestor, não do algoritmo.
 Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
 ([`notebooks/03_interpretabilidade.ipynb`](notebooks/03_interpretabilidade.ipynb)):
 
-1. **UF é o fator dominante** (queda de AUC 0,030 ao embaralhar) — as
+1. **UF é o fator dominante** (queda de AUC 0,030 ao embaralhar): as
    diferenças estaduais de política de alfabetização e regime de colaboração
    pesam mais que o nível socioeconômico municipal;
-2. **Histórico educacional recente da rede** — nota Saeb de Língua Portuguesa
+2. **Histórico educacional recente da rede**: nota Saeb de Língua Portuguesa
    (0,024) e IDEB dos anos iniciais (0,010) da edição anterior;
 3. **Rede (municipal × estadual) e porte** (população, tamanho da escola);
 4. **Socioeconômico e infraestrutura diluídos** na importância marginal
    (≈0,001 cada): UF e IDEB já carregam boa parte dessa informação
-   (colinearidade). A EDA mostra a correlação municipal clara — seguem
+   (colinearidade). A EDA mostra a correlação municipal clara; seguem
    relevantes para diagnóstico, não como preditores marginais.
 
 ![SHAP](images/interp_shap_beeswarm.png)
@@ -200,15 +200,15 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
 ## 8. Insights encontrados
 
 - **O risco é previsível antes da prova:** o ranking municipal previsto
-  (fora-da-amostra) acompanha fortemente o resultado real de 2024 —
-  **Spearman −0,76** entre risco previsto e taxa observada;
+  (fora-da-amostra) acompanha fortemente o resultado real de 2024:
+  **Spearman -0,76** entre risco previsto e taxa observada;
 - **A desigualdade é estrutural e mapeável:** 3 famílias de municípios
   (clustering KMeans) com perfis nítidos; a família crítica concentra baixo
   IDHM, alta pobreza infantil, histórico educacional fraco e é majoritariamente
   Norte/Nordeste;
 - **As metas de 2025 já nascem em risco em 59% dos municípios avaliáveis:**
   1.699 de 2.873 municípios (com ≥100 alunos avaliados) têm performance
-  prevista abaixo da meta pactuada para 2025 — lista nominal por UF em
+  prevista abaixo da meta pactuada para 2025, com lista nominal por UF em
   [`reports/municipios_risco_meta_2025.csv`](reports/municipios_risco_meta_2025.csv);
 - **Política estadual importa mais que renda:** o peso da UF sobre todos os
   demais fatores sugere que arranjos estaduais estruturados de alfabetização
@@ -216,7 +216,7 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
 - **O modelo melhora à medida que o programa acumula histórico:** o experimento
   do notebook 05 mostra que incorporar a taxa municipal da edição anterior
   (possível a partir da coorte de 2024) eleva a AUC de 0,653 para 0,662 no
-  mesmo protocolo, com ganho positivo nos 3 folds — o modelo principal é o
+  mesmo protocolo, com ganho positivo nos 3 folds; o modelo principal é o
   piso, não o teto.
 
 | | |
@@ -229,7 +229,7 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
 - **Features exclusivamente contextuais:** a base pública não traz atributos
   individuais do aluno (nível socioeconômico familiar, frequência, trajetória
   escolar). Modelos de desfecho individual com features só de contexto têm teto
-  natural de AUC — o valor está em **ordenar risco**, não em acertar cada
+  natural de AUC; o valor está em **ordenar risco**, não em acertar cada
   criança;
 - **Apenas duas edições** da avaliação (2023, 2024): a validação temporal tem
   um único salto; a estabilidade em horizontes maiores é hipótese;
@@ -237,7 +237,7 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
   infraestrutura da escola específica (fica o agregado municipal);
 - **Roraima ausente** da base em ambos os anos;
 - A comparação com metas usa a coorte prevista de 2024 como estimativa da
-  capacidade corrente da rede — não é uma projeção causal de 2025;
+  capacidade corrente da rede, não é uma projeção causal de 2025;
 - Correlação ≠ causa: o modelo prioriza, não substitui avaliação de impacto.
 
 ## 10. Aplicação prática para políticas públicas
@@ -247,7 +247,7 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
   permite priorizar apoio técnico, formação de alfabetizadores e recomposição
   de infraestrutura **durante** o ano letivo, sem esperar a divulgação oficial;
 - **Alerta de metas:** a lista de municípios previstos abaixo da meta de 2025
-  aponta onde o Compromisso corre risco — por UF e com o tamanho do gap;
+  aponta onde o Compromisso corre risco, por UF e com o tamanho do gap;
 - **Desenho de política:** as 3 famílias de municípios pedem estratégias
   diferentes (a família crítica exige ação socioeducacional combinada; a
   intermediária, replicação de práticas; a consolidada, manutenção);
@@ -258,7 +258,7 @@ Permutation importance (na pipeline, sobre o teste de 2024) + SHAP
 ## 11. Possíveis evoluções futuras
 
 - Re-treinar a cada edição (2025+) incorporando a taxa municipal da edição
-  anterior — o ganho já está quantificado no notebook 05 — e medir a
+  anterior (o ganho já está quantificado no notebook 05) e medir a
   estabilidade do ranking;
 - Nível socioeconômico do INEP (INSE) por escola, se o INEP publicar chave
   cruzável;

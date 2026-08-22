@@ -14,7 +14,7 @@ na própria camada Gold, como pede o enunciado) e exportado em Parquet para data
 
 Decisões anti-data-leakage (documentadas também no README):
   1. `proficiencia` NUNCA entra: o alvo `alfabetizado` é definido como
-     proficiencia >= 743 — usar a nota seria prever o alvo com o próprio alvo.
+     proficiencia >= 743: usar a nota seria prever o alvo com o próprio alvo.
   2. Apenas alunos PRESENTES: os ausentes chegam com alfabetizado = 0 de fábrica,
      mas isso é artefato de preenchimento, não medição (rótulo falso).
   3. Nenhum agregado de alfabetização do MESMO ano entra como feature: a taxa
@@ -23,7 +23,7 @@ Decisões anti-data-leakage (documentadas também no README):
      Atlas 2010) ou estruturais (Censo Escolar do ano corrente = infraestrutura
      conhecida no início do ano letivo, não desfecho).
   4. `id_municipio` e `id_escola` saem no arquivo como CHAVES DE GRUPO para a
-     validação (GroupKFold) e para agregações estratégicas — não são features.
+     validação (GroupKFold) e para agregações estratégicas, não são features.
 
 FinOps: toda query passa por dry-run antes de executar e o custo em MB é logado.
 
@@ -45,7 +45,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 log = logging.getLogger("build_dataset")
 
 # ---------------------------------------------------------------------------
-# SQL — base de modelagem no grão aluno, materializada na camada Gold
+# SQL: base de modelagem no grão aluno, materializada na camada Gold
 # ---------------------------------------------------------------------------
 SQL_BASE_ML = f"""
 create or replace table `{PROJECT_ID}.gold.gold_base_ml_alunos` as
@@ -67,7 +67,7 @@ porte_escola as (
 
 -- Censo Escolar: infraestrutura das escolas EM ATIVIDADE ('1') com anos
 -- iniciais do fundamental, agregada por município e ano. Infraestrutura é
--- atributo conhecido no início do ano letivo — não é desfecho da avaliação.
+-- atributo conhecido no início do ano letivo, não é desfecho da avaliação.
 censo as (
     select
         ano,
@@ -224,13 +224,13 @@ GOLD_EXPORTS = [
 
 # Exports auxiliares por query (aplicação estratégica).
 QUERY_EXPORTS = {
-    # Nome oficial dos municípios (diretório da Base dos Dados) — para os
+    # Nome oficial dos municípios (diretório da Base dos Dados), para os
     # rankings de risco falarem "Município (UF)", não código IBGE.
     "dim_municipios": """
         select id_municipio, nome, sigla_uf
         from `basedosdados.br_bd_diretorios_brasil.municipio`
     """,
-    # Metas municipais POR ANO (2024–2030). A Silver da Fase 2 manteve apenas a
+    # Metas municipais POR ANO (2024-2030). A Silver da Fase 2 manteve apenas a
     # meta de 2030; para comparar previsão × meta do ano seguinte precisamos da
     # trajetória anual completa, direto da Bronze.
     "metas_municipio_por_ano": f"""

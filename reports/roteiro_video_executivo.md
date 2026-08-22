@@ -1,4 +1,4 @@
-# Roteiro — Vídeo Executivo (até 5 minutos)
+# Roteiro do Vídeo Executivo (até 5 minutos)
 
 > Cenário simulado: reunião com gestores públicos de educação (secretaria
 > estadual/municipal, MEC). Tom: executivo, direto, sem jargão técnico.
@@ -7,7 +7,7 @@
 
 ---
 
-## Bloco 1 — O problema (0:00–0:45)
+## Bloco 1: O problema (0:00-0:45)
 
 **Fala:**
 
@@ -20,9 +20,9 @@ fechou.
 A pergunta que este projeto responde: dá para saber **antes** da avaliação onde
 o risco vai se concentrar, e agir a tempo?"
 
-*(Visual: `eda_uf.png` — o mapa da desigualdade por estado.)*
+*(Visual: `eda_uf.png`, o mapa da desigualdade por estado.)*
 
-## Bloco 2 — O que construímos (0:45–1:45)
+## Bloco 2: O que construímos (0:45-1:45)
 
 **Fala:**
 
@@ -39,15 +39,15 @@ O resultado que interessa à gestão: o ranking de municípios que o modelo prev
 como críticos acompanhou fortemente o resultado real de 2024. Em números: quem
 o modelo apontou como risco, de fato teve os piores resultados."
 
-*(Visual: `estrategia_validacao_ranking.png` — previsto × real.)*
+*(Visual: `estrategia_validacao_ranking.png`, previsto × real.)*
 
-## Bloco 3 — Os três achados principais (1:45–3:15)
+## Bloco 3: Os três achados principais (1:45-3:15)
 
 **Fala:**
 
 "Três achados para decisão.
 
-**Primeiro: o fator que mais pesa não é renda — é o estado.** A UF da criança
+**Primeiro: o fator que mais pesa não é renda: é o estado.** A UF da criança
 importa mais que o nível socioeconômico do município. Isso é uma boa notícia:
 significa que política estadual estruturada de alfabetização muda o jogo, e que
 replicar os arranjos dos estados que performam acima do esperado é a alavanca
@@ -64,11 +64,11 @@ cada um."
 
 *(Visuais: `interp_permutation.png`, `estrategia_metas_uf.png`.)*
 
-## Bloco 4 — Como usar (3:15–4:15)
+## Bloco 4: Como usar (3:15-4:15)
 
 **Fala:**
 
-"Este modelo não substitui a avaliação oficial — ele antecipa a prioridade.
+"Este modelo não substitui a avaliação oficial: ele antecipa a prioridade.
 Três usos imediatos:
 
 Um: **focalização**. O ranking municipal de risco orienta onde concentrar
@@ -82,10 +82,10 @@ Três: **desenho de política**. Os dados agrupam os municípios em três famíl
 com perfis muito diferentes; a família crítica, concentrada no Norte e
 Nordeste, pede ação socioeducacional combinada, não apenas educacional."
 
-*(Visual: `estrategia_mapa_risco.png` — o mapa do Brasil pintado pelo risco —
+*(Visual: `estrategia_mapa_risco.png`, o mapa do Brasil pintado pelo risco,
 e `estrategia_clusters.png`.)*
 
-## Bloco 5 — Fecho (4:15–4:50)
+## Bloco 5: Fecho (4:15-4:50)
 
 **Fala:**
 
@@ -106,7 +106,7 @@ passo para cumpri-la. Obrigado."
 - [ ] Até 5 minutos (roteiro calibrado para ~4:50 em ritmo de fala normal);
 - [ ] Tela: alternar entre apresentador e os gráficos indicados (ou slides com
       os PNGs de `images/`);
-- [ ] Sem jargão: não dizer "AUC", "SHAP", "LightGBM" — dizer "acerto do
+- [ ] Sem jargão: não dizer "AUC", "SHAP", "LightGBM"; dizer "acerto do
       ranking", "fatores que mais pesam", "modelo";
 - [ ] Subir o vídeo (YouTube não listado ou drive da pós) e adicionar o link no
       README.
