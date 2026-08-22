@@ -31,15 +31,12 @@ from lightgbm import LGBMClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (
-    accuracy_score, balanced_accuracy_score, brier_score_loss, f1_score,
-    precision_score, recall_score, roc_auc_score,
-)
 from sklearn.model_selection import (
     RandomizedSearchCV, StratifiedGroupKFold, cross_val_score,
 )
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
+from src.evaluation.metrics import metricas  # noqa: E402
 from src.preprocessing.pipeline import (  # noqa: E402
     ALL_FEATURES, TARGET, WEIGHT, load_dataset, make_pipeline,
 )
@@ -91,18 +88,6 @@ def espaco_busca() -> dict:
         "model__subsample": [0.7, 0.85, 1.0],
         "model__colsample_bytree": [0.7, 0.85, 1.0],
         "model__reg_lambda": [0.0, 1.0, 5.0],
-    }
-
-
-def metricas(y_true, y_pred, y_prob, sample_weight=None) -> dict:
-    return {
-        "roc_auc": roc_auc_score(y_true, y_prob, sample_weight=sample_weight),
-        "accuracy": accuracy_score(y_true, y_pred, sample_weight=sample_weight),
-        "balanced_accuracy": balanced_accuracy_score(y_true, y_pred, sample_weight=sample_weight),
-        "f1": f1_score(y_true, y_pred, sample_weight=sample_weight),
-        "precision": precision_score(y_true, y_pred, sample_weight=sample_weight),
-        "recall": recall_score(y_true, y_pred, sample_weight=sample_weight),
-        "brier": brier_score_loss(y_true, y_prob, sample_weight=sample_weight),
     }
 
 
