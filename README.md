@@ -325,5 +325,7 @@ uv run jupyter lab notebooks/
 
 ## Vídeo executivo
 
-Roteiro em [`reports/roteiro_video_executivo.md`](reports/roteiro_video_executivo.md);
-link do vídeo: *(adicionar após a gravação)*.
+**Assista:** [video-executivo-fase3.mp4](https://github.com/LucaOliveiraPrado/tech-challenge-fase3/releases/download/v1.0/video-executivo-fase3.mp4)
+(5 minutos, anexo do [release v1.0](https://github.com/LucaOliveiraPrado/tech-challenge-fase3/releases/tag/v1.0)).
+
+Roteiro em [`reports/roteiro_video_executivo.md`](reports/roteiro_video_executivo.md).
